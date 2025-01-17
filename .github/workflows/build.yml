@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: 'Build'
+    runs-on: 'windows-latest'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install V
+        uses: vlang/setup-v@v1.4
+        with:
+          check-latest: true
+      - name: Check V Version
+        run: v doctor
+      - name: Build
+        run: v -showcc -cc tcc -d no_backtrace -shared code.v
+      - name: Build Loader
+        run: gcc -o loader.exe loader.c
+      - name: Publish artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts
+          path: |
+            code.dll
+            loader.exe
+        
